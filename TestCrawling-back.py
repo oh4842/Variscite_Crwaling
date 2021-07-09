@@ -77,7 +77,7 @@ def power_supply_handler(url):
     driver.back() 
 
 def evaluationkits_handler(url):
-    print('this product name is',url)
+    print('this product name is ',url)
     base_url = 'https://shop.variscite.com/product/evaluation-kit/'
     url = base_url + url
     driver.get(url)
@@ -89,7 +89,7 @@ def evaluationkits_handler(url):
     driver.back()
 
 def module_handler(url):
-    print('this product name is', url)
+    print('this is product name is', url)
     temp = url
     base_url = 'https://shop.variscite.com/product/system-on-module/'
     url = base_url + url
@@ -100,31 +100,17 @@ def module_handler(url):
         # System On Module의 가격이 적혀있는 최대 횟수 반복
         while somflag < 6:
             strsomflag = str(somflag)
-            strsomflag2 = str(somflag-1)
             # 1~?개 까지 있으니 ?번째가 존재할 때 실행
             if flag_xpath('/html/body/div[2]/div/div/main/article/div/div/div[2]/div[4]/form/table/tbody/tr/td[2]/div/div['+strsomflag+']/div/label/span[2]') == True:
                 element_name = driver.find_element_by_xpath('/html/body/div[2]/div/div/main/article/div/div/div[2]/div[4]/form/table/tbody/tr/td[2]/div/div['+strsomflag+']/div/label/span[1]')
                 element_price = driver.find_element_by_xpath('/html/body/div[2]/div/div/main/article/div/div/div[2]/div[4]/form/table/tbody/tr/td[2]/div/div['+strsomflag+']/div/label/span[2]')
                 print(element_name.text, element_price.text)
-                # 장바구니에 넣는 과정
-                driver.execute_script("document.getElementsByClassName('term_name')["+strsomflag2+"].click()")
-                driver.execute_script("document.getElementsByClassName('single_add_to_cart_button button alt')[0].click()")
-                driver.implicitly_wait(5)
-                driver.back()
                 somflag = somflag + 1
             else:
                 break
     else:
         element = driver.find_element_by_xpath('/html/body/div[2]/div/div/main/article/div/div/div[2]/div[4]/form/table/tbody/tr/td[2]/div/div/div/label/span[2]')
         print(temp, element.text)
-        # 제품 세부사항 클릭
-        driver.execute_script("document.getElementsByClassName('term_name')[0].click()")
-        # add cart 버튼
-        driver.execute_script("document.getElementsByClassName('single_add_to_cart_button button alt')[0].click()")
-        # 로딩을 위한 2초 대기
-        driver.implicitly_wait(5)
-        # 장바구니에서 다시 제품 페이지로 이동
-        driver.back()
     driver.back()
 ##############################################################################################################################################################################
 
@@ -143,16 +129,14 @@ driver.get(url)
 flag = 1
 # next 버튼
 next_btn = "document.getElementsByClassName('next')[0].click();"
+
 while True:
     # 형 변환 / int to string
     strflag = str(flag)
     # 페이지 내 제품 이름을 가져오는 변수
     name_xpath = '/html/body/div[3]/div/div[1]/main/article/div/div/div[3]/ul/li['+strflag+']/a[1]/div[2]/h2'
     # 페이지 내에 제품 이름을 가져 올 수 있다면 실행
-    driver.implicitly_wait(10)
-    print('----flag before----',flag)
     if flag_page(name_xpath) == True:
-        print('2페이지아니야?')
         element = driver.find_element_by_xpath(name_xpath)
         temp_str = element.text
         print('----------------------------------------------------------------------------------------------')
@@ -192,19 +176,16 @@ while True:
             somurl = temp_str.replace(' ','-')
             module_handler(somurl)
         flag = flag + 1
-        print('flag------------',flag)
     # 페이지 내에 제품 이름이 없다면 실행
     else:
+        # 처음부터 가져오기 위해 초기화
         flag = 1
-        print('claer---',flag)
         # next 버튼이 있다면 실행
         if page_chk(next_btn) == True:
             driver.execute_script(next_btn)
-            driver.implicitly_wait(5)
-            print(driver.current_url)
             continue
         # 없다면 드라이버와 해당 python 파일 실행 종료
         driver.quit()
         print('---------------------종료------------------------')
         sys.exit()
-### 왜 2페이지를 그냥 넘어갈까?;;;; ###
+
